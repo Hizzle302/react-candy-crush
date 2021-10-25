@@ -1,25 +1,73 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react"
 
-function App() {
+const width = 8
+const candyColors = [
+  'green',
+  'blue',
+  'pink',
+  'orange',
+  'red',
+  'purple',
+  'yellow',
+  'brown'
+]
+
+
+const App = () => {
+   const [currentColorArrangement, setcurrentColorArrangement] = useState([])
+
+   const checkForColumnOfThree = () => {
+     for (let i = 0; i < 47; i++) {
+       const columnOfThree = [i, i + width, i + width * 2]
+       const decidedColor = currentColorArrangement[i]
+
+       if ( columnOfThree.every(square => currentColorArrangement[square] === decidedColor)) {
+            columnOfThree.forEach(square => currentColorArrangement[square] = '')
+       }
+     }
+   }
+
+  const createBoard = () => {
+    const randomColorArrangement = []
+    for (let i = 0; i < width * width; i++) {
+      const randomColor = candyColors[Math.floor(Math.random() * candyColors.length)]
+      randomColorArrangement.push(randomColor)
+    }
+    setcurrentColorArrangement(randomColorArrangement)
+  }
+
+  useEffect(() => {
+    createBoard()
+  }, [])
+
+
+  useEffect(() => {
+
+    const timer = setInterval(() => {
+      checkForColumnOfThree()
+      setcurrentColorArrangement([...currentColorArrangement])
+
+    }, 100)
+    return () => clearInterval(timer)
+
+  }, [checkForColumnOfThree, currentColorArrangement])
+
+  console.log(currentColorArrangement)
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <div className="game">
+        {currentColorArrangement.map((candyColor, index) => (
+          <img
+            key={index}
+            style={{backgroundColor: candyColor}}
+            alt={candyColor}
+          />
+        ))}
+
+      </div>
+      
     </div>
-  );
+  )
 }
 
 export default App;
